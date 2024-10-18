@@ -1,0 +1,227 @@
+﻿SELECT TOP 10 * FROM [sales].[dbo].[Superstore Sales Dataset]; 
+
+EXEC sp_columns '[sales].[dbo].[Superstore Sales Dataset]';
+
+--عرض الطلبات حسب تاريخ الطلب
+SELECT Order_ID, Order_Date, Customer_ID, Ship_Mode
+FROM [sales].[dbo].[Superstore Sales Dataset]
+ORDER BY Order_Date ASC;
+
+--حساب عدد الطلبات لكل وضع شحن
+SELECT Ship_Mode, COUNT(*) AS Total_Orders
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Ship_Mode;
+
+
+--الاوردرات سنه 2017
+SELECT *
+FROM [sales].[dbo].[Superstore Sales Dataset]
+WHERE YEAR(Order_Date) = 2017;
+
+--الاوردرات سنه 2018
+SELECT *
+FROM [sales].[dbo].[Superstore Sales Dataset]
+WHERE YEAR(Order_Date) = 2018;
+
+--الاوردرات سنه 2016
+SELECT *
+FROM [sales].[dbo].[Superstore Sales Dataset]
+WHERE YEAR(Order_Date) = 2016;
+
+--الاوردرات سنه 2015
+SELECT *
+FROM [sales].[dbo].[Superstore Sales Dataset]
+WHERE YEAR(Order_Date) = 2015;
+
+
+-- أفضل العملاء
+SELECT TOP 10 Customer_Name, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Customer_Name
+ORDER BY Total_Sales DESC;
+
+--المبيعات حسب الفئات والمنتجات الفرعية
+SELECT Category, Sub_Category, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Category, Sub_Category
+ORDER BY Total_Sales DESC;
+
+--عدد الطلبات حسب الأشهر
+SELECT YEAR(Order_Date) AS Year, MONTH(Order_Date) AS Month, COUNT(Order_ID) AS Total_Orders
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY YEAR(Order_Date), MONTH(Order_Date)
+ORDER BY Year, Month;
+
+--متوسط وقت الشحن حسب المنطقة
+SELECT Region, AVG(DATEDIFF(day, Order_Date, Ship_Date)) AS Avg_Shipping_Time
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Region
+ORDER BY Avg_Shipping_Time DESC;
+
+
+--الأيام بين تاريخ الطلب وتاريخ الشحن
+
+SELECT Order_ID, Order_Date, Ship_Date, DATEDIFF(day, Order_Date, Ship_Date) AS Days_To_Ship
+FROM [sales].[dbo].[Superstore Sales Dataset]
+ORDER BY Days_To_Ship DESC;
+
+
+--الطلبات المتاخرة عن التسليم
+SELECT Order_ID, Order_Date, Ship_Date, DATEDIFF(day, Order_Date, Ship_Date) AS Days_To_Ship
+FROM [sales].[dbo].[Superstore Sales Dataset]
+WHERE DATEDIFF(day, Order_Date, Ship_Date) > 5
+ORDER BY Days_To_Ship DESC;
+
+--التوزيع الزمني للطلبات
+SELECT YEAR(Order_Date) AS Year, MONTH(Order_Date) AS Month, COUNT(Order_ID) AS Total_Orders, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY YEAR(Order_Date), MONTH(Order_Date)
+ORDER BY Year, Month;
+
+--متوسط وقت الشحن لكل طريقة شحن
+SELECT Ship_Mode, AVG(DATEDIFF(day, Order_Date, Ship_Date)) AS Avg_Shipping_Time
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Ship_Mode
+ORDER BY Avg_Shipping_Time DESC;
+
+--العملاء حسب الفئات
+SELECT Segment, COUNT(DISTINCT Customer_ID) AS Total_Customers, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Segment
+ORDER BY Total_Sales DESC;
+
+--العلاقة بين طرق الشحن المختلفة وإجمالي المبيعات
+SELECT Ship_Mode, SUM(Sales) AS Total_Sales, COUNT(Order_ID) AS Total_Orders
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Ship_Mode
+ORDER BY Total_Sales DESC;
+
+--العملاء الذين قاموا بطلب أكثر من مرة
+SELECT Customer_Name, COUNT(Order_ID) AS Total_Orders
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Customer_Name
+HAVING COUNT(Order_ID) > 1
+ORDER BY Total_Orders DESC;
+
+-- العملاء الذين قاموا بطلب أكثر من مرةمع حجم المبيعات لكل فرد
+SELECT Customer_Name, COUNT(Order_ID) AS Total_Orders, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Customer_Name
+HAVING COUNT(Order_ID) > 3 
+ORDER BY Total_Orders DESC;
+
+--المبيعات حسب الفصول
+SELECT YEAR(Order_Date) AS Year, 
+       DATENAME(QUARTER, Order_Date) AS Quarter, 
+       SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY YEAR(Order_Date), DATENAME(QUARTER, Order_Date)
+ORDER BY Year, Quarter DESC;
+
+
+SELECT Country, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Country
+ORDER BY Total_Sales DESC;
+
+
+SELECT Product_ID, COUNT(Order_ID) AS Total_Orders
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Product_ID
+HAVING COUNT(Order_ID) > 1
+ORDER BY Total_Orders DESC;
+
+
+
+SELECT DATENAME(MONTH, Order_Date) AS Month, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY DATENAME(MONTH, Order_Date)
+ORDER BY Total_Sales DESC;
+
+
+SELECT Customer_Name, 
+       CASE WHEN COUNT(Order_ID) = 1 THEN 'New Customer' ELSE 'Returning Customer' END AS Customer_Type, 
+       COUNT(Order_ID) AS Total_Orders
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Customer_Name
+ORDER BY Total_Orders DESC;
+
+
+
+
+SELECT Product_Name, YEAR(Order_Date) AS Year, MONTH(Order_Date) AS Month, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Product_Name, YEAR(Order_Date), MONTH(Order_Date)
+ORDER BY Product_Name, Year, Month;
+
+SELECT Customer_Name, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Customer_Name
+HAVING SUM(Sales) > 1000
+ORDER BY Total_Sales DESC;
+
+
+SELECT Category, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Category
+ORDER BY Total_Sales DESC;
+
+
+SELECT , AVG(DATEDIFF(day, Order_Date, Ship_Date)) AS Avg_Shipping_Time
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Region
+ORDER BY Avg_Shipping_Time DESC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ASE WHEN COUNT(Order_ID) = 1 THEN 'New Customer' ELSE 'Returning Customer' END AS Customer_Type, 
+       COUNT(Order_ID) AS Total_Orders
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Customer_Name
+ORDER BY Total_Orders DESC;
+
+
+
+
+SELECT Product_Name, YEAR(Order_Date) AS Year, MONTH(Order_Date) AS Month, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Product_Name, YEAR(Order_Date), MONTH(Order_Date)
+ORDER BY Product_Name, Year, Month;
+
+SELECT Customer_Name, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Customer_Name
+HAVING SUM(Sales) > 1000
+ORDER BY Total_Sales DESC;
+
+
+SELECT Category, SUM(Sales) AS Total_Sales
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Category
+ORDER BY Total_Sales DESC;
+
+
+SELECT , AVG(DATEDIFF(day, Order_Date, Ship_Date)) AS Avg_Shipping_Time
+FROM [sales].[dbo].[Superstore Sales Dataset]
+GROUP BY Region
+ORDER BY Avg_Shipping_Time DESC;
+
+
+
+
